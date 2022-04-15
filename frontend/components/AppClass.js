@@ -1,10 +1,13 @@
 import React from 'react'
+import axios from 'axios'
 
 export default class AppClass extends React.Component {
   state = {
     yAxis: 1,
     xAxis: 1,
     total: 0,
+    email: "",
+    errorMessage: "",
     grid: [
       ["", "", ""],
       ["", "B", ""],
@@ -31,6 +34,7 @@ export default class AppClass extends React.Component {
     this.setState({
       ...this.state,
       yAxis: this.state.yAxis - 1,
+      total: this.state.total + 1,
       grid: updatedArray
     })
   }
@@ -46,6 +50,7 @@ export default class AppClass extends React.Component {
     this.setState({
       ...this.state,
       yAxis: this.state.yAxis + 1,
+      total: this.state.total + 1,
       grid: updatedArray
     })
   }
@@ -61,6 +66,7 @@ export default class AppClass extends React.Component {
     this.setState({
       ...this.state,
       xAxis: this.state.xAxis - 1,
+      total: this.state.total + 1,
       grid: updatedArray
     })
   }
@@ -76,6 +82,7 @@ export default class AppClass extends React.Component {
     this.setState({
       ...this.state,
       xAxis: this.state.xAxis + 1,
+      total: this.state.total + 1,
       grid: updatedArray
     })
   }
@@ -91,7 +98,37 @@ export default class AppClass extends React.Component {
       ...this.state,
       xAxis: 1,
       yAxis: 1,
+      total: 0,
       grid: updatedArray
+    })
+  }
+
+  handleSubmit = (event) => {
+    const data = { 
+      "x": this.state.xAxis,
+      "y": this.state.yAxis,
+      "steps": this.state.total, 
+      "email": this.state.email 
+    }
+    event.preventDefault();
+    axios.post("http://localhost:9000/api/result/", data)
+      .then(res => {
+        console.log(res.data)
+        this.setState({
+          errorMessage: res.data.message
+        })
+      })
+      .catch(err => {
+        return this.setState({
+          ...this.state,
+          errorMessage: err.response.data.message
+        })
+      })
+  }
+
+  onChange = (event) => {
+    this.setState({
+      email: event.target.value
     })
   }
 
@@ -100,8 +137,8 @@ export default class AppClass extends React.Component {
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">Coordinates ({this.state.xAxis}, {this.state.yAxis})</h3>
-          <h3 id="steps">You moved 0 times</h3>
+          <h3 id="coordinates">Coordinates ({this.state.xAxis + 1}, {this.state.yAxis + 1})</h3>
+          <h3 id="steps">You moved { this.state.total } times</h3>
         </div>
         <div id="grid">
           {
@@ -118,7 +155,7 @@ export default class AppClass extends React.Component {
           }
         </div>
         <div className="info">
-          <h3 id="message"></h3>
+          <h3 id="message">{this.state.errorMessage}</h3>
         </div>
         <div id="keypad">
           <button id="left" onClick={() => this.goLeft()}>LEFT</button>
@@ -127,8 +164,8 @@ export default class AppClass extends React.Component {
           <button id="down" onClick={() => this.goDown()}>DOWN</button>
           <button id="reset" onClick={() => this.reset()}>reset</button>
         </div>
-        <form>
-          <input id="email" type="email" placeholder="type email"></input>
+        <form onSubmit={this.handleSubmit}>
+          <input id="email" type="email" placeholder="type email" onChange={this.onChange} value={this.state.email}></input>
           <input id="submit" type="submit"></input>
         </form>
       </div>
