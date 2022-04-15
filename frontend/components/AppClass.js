@@ -9,9 +9,9 @@ export default class AppClass extends React.Component {
     email: "",
     errorMessage: "",
     grid: [
-      ["", "", ""],
-      ["", "B", ""],
-      ["", "", ""]
+      [null, null, null],
+      [null, "B", null],
+      [null, null, null]
     ],
   }
 
@@ -24,10 +24,16 @@ export default class AppClass extends React.Component {
   }
 
   goUp = () => {
+    if (this.state.yAxis - 1 < 0) {
+      this.setState({
+      ...this.state,
+      errorMessage: "You can't go up"
+    })
+  }
     const initArray = [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""]
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
     ]
     const updatedArray = initArray
     updatedArray[this.state.yAxis - 1][this.state.xAxis] = "B"
@@ -35,15 +41,20 @@ export default class AppClass extends React.Component {
       ...this.state,
       yAxis: this.state.yAxis - 1,
       total: this.state.total + 1,
+      errorMessage: "",
       grid: updatedArray
     })
   }
 
   goDown = () => {
+  if (this.state.yAxis + 1 > 2) return this.setState({
+      ...this.state,
+      errorMessage: "You can't go down"
+    })
     const initArray = [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""]
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
     ]
     const updatedArray = initArray
     updatedArray[this.state.yAxis + 1][this.state.xAxis] = "B"
@@ -51,15 +62,19 @@ export default class AppClass extends React.Component {
       ...this.state,
       yAxis: this.state.yAxis + 1,
       total: this.state.total + 1,
+      errorMessage: "",
       grid: updatedArray
     })
   }
 
   goLeft = () => {
+    if (this.state.xAxis - 1 < 0) return this.setState({
+      errorMessage: "You can't go left"
+    })
     const initArray = [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""]
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
     ]
     const updatedArray = initArray
     updatedArray[this.state.yAxis][this.state.xAxis - 1] = "B"
@@ -67,15 +82,19 @@ export default class AppClass extends React.Component {
       ...this.state,
       xAxis: this.state.xAxis - 1,
       total: this.state.total + 1,
+      errorMessage: "",
       grid: updatedArray
     })
   }
 
   goRight = () => {
+    if (this.state.xAxis + 1 > 2) return (this.setState({
+      errorMessage: "You can't go right"
+    }))
     const initArray = [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""]
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
     ]
     const updatedArray = initArray
     updatedArray[this.state.yAxis][this.state.xAxis + 1] = "B"
@@ -83,30 +102,32 @@ export default class AppClass extends React.Component {
       ...this.state,
       xAxis: this.state.xAxis + 1,
       total: this.state.total + 1,
+      errorMessage: "",
       grid: updatedArray
     })
   }
 
   reset = () => {
-    const initArray = [
-      ["", "", ""],
-      ["", "B", ""],
-      ["", "", ""]
-    ]
-    const updatedArray = initArray
     this.setState({
       ...this.state,
-      xAxis: 1,
       yAxis: 1,
+      xAxis: 1,
       total: 0,
-      grid: updatedArray
+      email: "",
+      errorMessage: "",
+      grid: [
+        [null, null, null],
+        [null, "B", null],
+        [null, null, null]
+      ]
     })
   }
 
+
   handleSubmit = (event) => {
     const data = { 
-      "x": this.state.xAxis,
-      "y": this.state.yAxis,
+      "x": this.state.xAxis + 1,
+      "y": this.state.yAxis + 1,
       "steps": this.state.total, 
       "email": this.state.email 
     }
@@ -124,6 +145,11 @@ export default class AppClass extends React.Component {
           errorMessage: err.response.data.message
         })
       })
+      .finally(
+        this.setState({
+          email: ""
+        })
+      )
   }
 
   onChange = (event) => {
