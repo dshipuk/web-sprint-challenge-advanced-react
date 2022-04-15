@@ -168,7 +168,7 @@ export default function AppFunctional(props) {
         <h3 id="coordinates">
           Coordinates ({state.xAxis + 1}, {state.yAxis + 1})
         </h3>
-        <h3 id="steps">You moved {state.total} times</h3>
+        <h3 id="steps">You moved {state.total} {state.total <= 1 ? "time" : "times"}</h3>
       </div>
       <div id="grid">
         {state.grid.map((square, index) => {
