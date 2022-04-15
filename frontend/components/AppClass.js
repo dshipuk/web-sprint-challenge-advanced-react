@@ -25,7 +25,7 @@ export default class AppClass extends React.Component {
 
   goUp = () => {
     if (this.state.yAxis - 1 < 0) {
-      this.setState({
+      return this.setState({
       ...this.state,
       errorMessage: "You can't go up"
     })
@@ -173,7 +173,7 @@ export default class AppClass extends React.Component {
               return(
                 square.map( (subSquare, subIndex) => {
                 return (
-                  <div key={index} className={this.isActive(subSquare)}>{subSquare}</div>
+                  <div key={subIndex} className={this.isActive(subSquare)}>{subSquare}</div>
                 )
               })
               )
